@@ -45,6 +45,9 @@ public class TimelineManager : MonoBehaviour
             lungModels[i].SetActive(false);
             SetSprite(i, false); // Set to unselected sprite initially
         }
+
+        // Initialize with index 10 active
+        ActivateDefaultSelection(10);
     }
 
     void Update()
@@ -115,5 +118,21 @@ public class TimelineManager : MonoBehaviour
             SpriteRenderer spriteRenderer = timelineSprite[index].GetComponent<SpriteRenderer>();
             spriteRenderer.sprite = isSelected ? selectedSprite : unselectedSprite;
         }
+    }
+
+    // Helper method to activate the default selection (index 10)
+    void ActivateDefaultSelection(int index)
+    {
+        // Validate index
+        if (index < 0 || index >= lungModels.Length || index >= timelineSprite.Length)
+        {
+            Debug.LogWarning("Invalid default index.");
+            return;
+        }
+
+        // Activate the lung model and timeline sprite for the default index
+        lungModels[index].SetActive(true);
+        SetSprite(index, true);
+        currentSelection = index;
     }
 }
