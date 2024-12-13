@@ -7,8 +7,8 @@ public class ControlsController : MonoBehaviour
     public GameObject toggleableObject; // The object to show/hide
 
     private bool isToggled = false; // Track the toggle state
-    private Vector3 defaultRotation = new Vector3(180f, 0f, 0f); // Default rotation
-    private Vector3 toggledRotation = new Vector3(0f, 0f, 0f); // Toggled rotation
+    private Vector3 defaultRotation = new Vector3(0f, 0f, 0f); // Default rotation
+    private Vector3 toggledRotation = new Vector3(180f, 0f, 0f); // Toggled rotation
 
     // Method to toggle rotation and visibility
     public void Toggle()
