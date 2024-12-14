@@ -11,6 +11,8 @@ public class LineScript : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        lineRenderRef.SetPosition(1, endPoint.localPosition);
+        //lineRenderRef.SetPosition(1, (endPoint.localPosition - Camera.main.transform.position).normalized);
+        lineRenderRef.SetPosition(1, (endPoint.localPosition));
     }
 }
+

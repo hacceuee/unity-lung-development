@@ -93,6 +93,7 @@ public class CameraControl : MonoBehaviour
 
             transform.Rotate(Camera.main.transform.right, verticalRotation, Space.World);
             previousMousePosition = Input.mousePosition;
+          
         }
     }
 
@@ -127,6 +128,9 @@ public class CameraControl : MonoBehaviour
     // Applies a gentle automatic rotation with a cooldown delay after mouse release
     private void ApplyGentleRotation()
     {
+        
+        //Debug.Log($"Camera Position: {Camera.main.transform.position}");
+
         // Decrease the cooldown timer if it's greater than 0
         if (rotationCooldown > 0)
         {
