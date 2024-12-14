@@ -9,6 +9,7 @@ public class TimelineManager : MonoBehaviour
     public Sprite selectedSprite; // The sprite for the selected state
     public GameObject[] timelineSprite; // GameObjects with Sprite Renderers (that will change sprite)
     public GameObject[] lungModels; // Models corresponding to each checkpoint
+    public GameObject[] informationPanel; // Information panels corresponding to each checkpoint
 
     public GameObject pleaseSelectLabel; // Label that says "Please Select"
     public Transform movingObject; // Object to move smoothly
@@ -34,7 +35,7 @@ public class TimelineManager : MonoBehaviour
             timelineCheckpoint[i].onClick.AddListener(() => OnButtonClick(index));
         }
 
-        // Initial state: hide all models, set sprites to unselected, and show the "Please Select" label
+        // Initial state: hide all models, information panels, set sprites to unselected, and show the "Please Select" label
         if (pleaseSelectLabel != null)
         {
             pleaseSelectLabel.SetActive(true);
@@ -43,6 +44,10 @@ public class TimelineManager : MonoBehaviour
         for (int i = 0; i < lungModels.Length; i++)
         {
             lungModels[i].SetActive(false);
+            if (informationPanel.Length > i)
+            {
+                informationPanel[i].SetActive(false);
+            }
             SetSprite(i, false); // Set to unselected sprite initially
         }
 
@@ -75,13 +80,21 @@ public class TimelineManager : MonoBehaviour
         // If there's a current selection, reset it
         if (currentSelection != -1)
         {
-            // Hide the previous model
+            // Hide the previous model and information panel
             lungModels[currentSelection].SetActive(false);
+            if (informationPanel.Length > currentSelection)
+            {
+                informationPanel[currentSelection].SetActive(false);
+            }
             SetSprite(currentSelection, false); // Set previous sprite to unselected
         }
 
-        // Show the selected model and update the sprite
+        // Show the selected model, information panel, and update the sprite
         lungModels[index].SetActive(true);
+        if (informationPanel.Length > index)
+        {
+            informationPanel[index].SetActive(true);
+        }
         SetSprite(index, true); // Set sprite to selected
 
         // Update the current selection to the new button
@@ -124,14 +137,17 @@ public class TimelineManager : MonoBehaviour
     void ActivateDefaultSelection(int index)
     {
         // Validate index
-        if (index < 0 || index >= lungModels.Length || index >= timelineSprite.Length)
+        if (index < 0 || index >= lungModels.Length || index >= timelineSprite.Length || index >= informationPanel.Length)
         {
             Debug.LogWarning("Invalid default index.");
             return;
         }
 
-        // Activate the lung model and timeline sprite for the default index
+        // Activate the lung model, timeline sprite, and information panel for the default index
         lungModels[index].SetActive(true);
+        
+        informationPanel[index].SetActive(false);
+      
         SetSprite(index, true);
         currentSelection = index;
     }
