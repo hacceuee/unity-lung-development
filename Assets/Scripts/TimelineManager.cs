@@ -51,8 +51,8 @@ public class TimelineManager : MonoBehaviour
             SetSprite(i, false); // Set to unselected sprite initially
         }
 
-        // Initialize with index 10 active
-        ActivateDefaultSelection(10);
+        // Initialize with index 7 active
+        ActivateDefaultSelection(7);
     }
 
     void Update()
