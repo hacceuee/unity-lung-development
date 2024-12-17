@@ -27,6 +27,7 @@ public class CameraControl : MonoBehaviour
     private Camera cam;
 
     // Track mouse button press state
+    private bool isMouseButtonHeld = false;
     private float mouseButtonHoldTime = 0f;
 
     // Auto-rotation state
@@ -65,11 +66,17 @@ public class CameraControl : MonoBehaviour
         if (Input.GetMouseButton(0) && !IsAltPressed())
         {
             HandleOrbitRotation();
+            isMouseButtonHeld = true; // Start tracking button hold time
         }
 
         if (Input.GetMouseButtonDown(0) && !IsAltPressed())
         {
             mouseButtonHoldTime = 0f; // Reset the hold time when the button is first pressed
+        }
+
+        if (Input.GetMouseButtonUp(0) && !IsAltPressed())
+        {
+            isMouseButtonHeld = false; // Stop tracking button hold time when released
         }
 
         // Handle panning with Right Mouse Button
@@ -88,19 +95,14 @@ public class CameraControl : MonoBehaviour
             Zoom();
         }
 
-        //Debug.Log(mouseButtonHoldTime);
+        Debug.Log(mouseButtonHoldTime);
 
         // Only reset the cooldown if the button has been held long enough
-        if (mouseButtonHoldTime < .15f)
+        if (isMouseButtonHeld)
         {
-            Debug.Log("short click " + mouseButtonHoldTime);
-            /*mouseButtonHoldTime += Time.deltaTime;
+            mouseButtonHoldTime += Time.deltaTime;
             rotationCooldown = 0f; // Don't apply the cooldown until the button is released.
-            currentRotationSpeed = 0f; // Reset rotation speed while the button is held*/
-        }
-        if(mouseButtonHoldTime > .2f)
-        {
-            Debug.Log("long click " + mouseButtonHoldTime);
+            currentRotationSpeed = 0f; // Reset rotation speed while the button is held
         }
         else if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
         {
