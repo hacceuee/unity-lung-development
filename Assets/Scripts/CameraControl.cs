@@ -25,6 +25,10 @@ public class CameraControl : MonoBehaviour
     public float maxZoom = 100f;
     private Camera cam;
 
+    // Track mouse button press state
+    private bool isMouseButtonHeld = false;
+    private float mouseButtonHoldTime = 10f;
+
     private void Start()
     {
         cam = Camera.main;
@@ -36,6 +40,17 @@ public class CameraControl : MonoBehaviour
         if (Input.GetMouseButton(0) && !IsAltPressed())
         {
             HandleOrbitRotation();
+            isMouseButtonHeld = true; // Start tracking button hold time
+        }
+
+        if (Input.GetMouseButtonDown(0) && !IsAltPressed())
+        {
+            mouseButtonHoldTime = 0f; // Reset the hold time when the button is first pressed
+        }
+
+        if (Input.GetMouseButtonUp(0) && !IsAltPressed())
+        {
+            isMouseButtonHeld = false; // Stop tracking button hold time when released
         }
 
         // Handle camera panning with Right Mouse Button
@@ -54,11 +69,16 @@ public class CameraControl : MonoBehaviour
             Zoom();
         }
 
-        // Reset the cooldown when any mouse button is held down
-        if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+        // Only reset the cooldown if the button has been held long enough
+        if (isMouseButtonHeld)
         {
-            rotationCooldown = rotationCooldownDuration;
-            currentRotationSpeed = 0f; // Reset rotation speed
+            mouseButtonHoldTime += Time.deltaTime;
+            rotationCooldown = 0f; // Don't apply the cooldown until the button is released.
+            currentRotationSpeed = 0f; // Reset rotation speed while the button is held
+        }
+        else if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+        {
+            rotationCooldown = rotationCooldownDuration; // Reset the cooldown if the button is pressed again
         }
         else
         {
@@ -93,7 +113,6 @@ public class CameraControl : MonoBehaviour
 
             transform.Rotate(Camera.main.transform.right, verticalRotation, Space.World);
             previousMousePosition = Input.mousePosition;
-          
         }
     }
 
@@ -128,9 +147,6 @@ public class CameraControl : MonoBehaviour
     // Applies a gentle automatic rotation with a cooldown delay after mouse release
     private void ApplyGentleRotation()
     {
-        
-        //Debug.Log($"Camera Position: {Camera.main.transform.position}");
-
         // Decrease the cooldown timer if it's greater than 0
         if (rotationCooldown > 0)
         {
