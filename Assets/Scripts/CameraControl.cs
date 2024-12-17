@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI; // For handling UI elements like buttons
 
 public class CameraControl : MonoBehaviour
 {
@@ -27,63 +28,84 @@ public class CameraControl : MonoBehaviour
 
     // Track mouse button press state
     private bool isMouseButtonHeld = false;
-    private float mouseButtonHoldTime = 10f;
+    private float mouseButtonHoldTime = 0f;
+
+    // Auto-rotation state
+    private bool isAutoRotationActive = true; // Default to on
+
+    // Buttons to control auto-rotation
+    public Button toggleOnButton;  // Button to turn auto-rotation on
+    public Button toggleOffButton; // Button to turn auto-rotation off
+
+    // Sprites or GameObjects to show when each button is active
+    public GameObject activeOnSprite;  // Sprite for the "on" button
+    public GameObject activeOffSprite; // Sprite for the "off" button
 
     private void Start()
     {
         cam = Camera.main;
+
+        // Set up the button listeners
+        toggleOnButton.onClick.AddListener(TurnAutoRotationOn);
+        toggleOffButton.onClick.AddListener(TurnAutoRotationOff);
+
+        // Set the initial state based on `isAutoRotationActive`
+        UpdateButtonStates();
     }
 
     private void Update()
     {
-        // Handle camera orbit rotation with Left Mouse Button
-        if (Input.GetMouseButton(0) && !IsAltPressed())
+        if (isAutoRotationActive)
         {
-            HandleOrbitRotation();
-            isMouseButtonHeld = true; // Start tracking button hold time
-        }
+            // Handle camera orbit rotation with Left Mouse Button
+            if (Input.GetMouseButton(0) && !IsAltPressed())
+            {
+                HandleOrbitRotation();
+                isMouseButtonHeld = true; // Start tracking button hold time
+            }
 
-        if (Input.GetMouseButtonDown(0) && !IsAltPressed())
-        {
-            mouseButtonHoldTime = 0f; // Reset the hold time when the button is first pressed
-        }
+            if (Input.GetMouseButtonDown(0) && !IsAltPressed())
+            {
+                mouseButtonHoldTime = 0f; // Reset the hold time when the button is first pressed
+            }
 
-        if (Input.GetMouseButtonUp(0) && !IsAltPressed())
-        {
-            isMouseButtonHeld = false; // Stop tracking button hold time when released
-        }
+            if (Input.GetMouseButtonUp(0) && !IsAltPressed())
+            {
+                isMouseButtonHeld = false; // Stop tracking button hold time when released
+            }
 
-        // Handle camera panning with Right Mouse Button
-        if (Input.GetMouseButtonDown(1))
-        {
-            InitializePanning();
-        }
-        else if (Input.GetMouseButton(1))
-        {
-            Pan();
-        }
+            // Handle panning with Right Mouse Button
+            if (Input.GetMouseButtonDown(1))
+            {
+                InitializePanning();
+            }
+            else if (Input.GetMouseButton(1))
+            {
+                Pan();
+            }
 
-        // Handle zoom with Alt + Left or Right Mouse Button
-        if ((Input.GetMouseButton(0) || Input.GetMouseButton(1)) && IsAltPressed())
-        {
-            Zoom();
-        }
+            // Handle zoom with Alt + Left or Right Mouse Button
+            if ((Input.GetMouseButton(0) || Input.GetMouseButton(1)) && IsAltPressed())
+            {
+                Zoom();
+            }
 
-        // Only reset the cooldown if the button has been held long enough
-        if (isMouseButtonHeld)
-        {
-            mouseButtonHoldTime += Time.deltaTime;
-            rotationCooldown = 0f; // Don't apply the cooldown until the button is released.
-            currentRotationSpeed = 0f; // Reset rotation speed while the button is held
-        }
-        else if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
-        {
-            rotationCooldown = rotationCooldownDuration; // Reset the cooldown if the button is pressed again
-        }
-        else
-        {
-            // Apply gentle rotation after cooldown
-            ApplyGentleRotation();
+            // Only reset the cooldown if the button has been held long enough
+            if (isMouseButtonHeld)
+            {
+                mouseButtonHoldTime += Time.deltaTime;
+                rotationCooldown = 0f; // Don't apply the cooldown until the button is released.
+                currentRotationSpeed = 0f; // Reset rotation speed while the button is held
+            }
+            else if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+            {
+                rotationCooldown = rotationCooldownDuration; // Reset the cooldown if the button is pressed again
+            }
+            else
+            {
+                // Apply gentle rotation after cooldown
+                ApplyGentleRotation();
+            }
         }
     }
 
@@ -168,5 +190,30 @@ public class CameraControl : MonoBehaviour
     private bool IsAltPressed()
     {
         return Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+    }
+
+    // Toggle auto-rotation on
+    private void TurnAutoRotationOn()
+    {
+        isAutoRotationActive = true;
+        UpdateButtonStates();
+    }
+
+    // Toggle auto-rotation off
+    private void TurnAutoRotationOff()
+    {
+        isAutoRotationActive = false;
+        UpdateButtonStates();
+    }
+
+    // Update button states (toggle sprites for "active" state)
+    private void UpdateButtonStates()
+    {
+        activeOnSprite.SetActive(isAutoRotationActive);   // Show "active" sprite for on button
+        activeOffSprite.SetActive(!isAutoRotationActive); // Show "active" sprite for off button
+
+        // Optionally, you can also disable/enable the buttons themselves if needed
+        toggleOnButton.interactable = !isAutoRotationActive;  // Disable button when it's on
+        toggleOffButton.interactable = isAutoRotationActive; // Disable button when it's off
     }
 }
