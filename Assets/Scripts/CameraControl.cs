@@ -27,7 +27,6 @@ public class CameraControl : MonoBehaviour
     private Camera cam;
 
     // Track mouse button press state
-    private bool isMouseButtonHeld = false;
     private float mouseButtonHoldTime = 0f;
 
     // Auto-rotation state
@@ -55,57 +54,57 @@ public class CameraControl : MonoBehaviour
 
     private void Update()
     {
+        // If gentle rotation is active, allow it, else just let regular mouse movement handle the rotation
         if (isAutoRotationActive)
         {
-            // Handle camera orbit rotation with Left Mouse Button
-            if (Input.GetMouseButton(0) && !IsAltPressed())
-            {
-                HandleOrbitRotation();
-                isMouseButtonHeld = true; // Start tracking button hold time
-            }
+            // Apply gentle rotation if it's active
+            ApplyGentleRotation();
+        }
 
-            if (Input.GetMouseButtonDown(0) && !IsAltPressed())
-            {
-                mouseButtonHoldTime = 0f; // Reset the hold time when the button is first pressed
-            }
+        // Handle camera orbit rotation with Left Mouse Button
+        if (Input.GetMouseButton(0) && !IsAltPressed())
+        {
+            HandleOrbitRotation();
+        }
 
-            if (Input.GetMouseButtonUp(0) && !IsAltPressed())
-            {
-                isMouseButtonHeld = false; // Stop tracking button hold time when released
-            }
+        if (Input.GetMouseButtonDown(0) && !IsAltPressed())
+        {
+            mouseButtonHoldTime = 0f; // Reset the hold time when the button is first pressed
+        }
 
-            // Handle panning with Right Mouse Button
-            if (Input.GetMouseButtonDown(1))
-            {
-                InitializePanning();
-            }
-            else if (Input.GetMouseButton(1))
-            {
-                Pan();
-            }
+        // Handle panning with Right Mouse Button
+        if (Input.GetMouseButtonDown(1))
+        {
+            InitializePanning();
+        }
+        else if (Input.GetMouseButton(1))
+        {
+            Pan();
+        }
 
-            // Handle zoom with Alt + Left or Right Mouse Button
-            if ((Input.GetMouseButton(0) || Input.GetMouseButton(1)) && IsAltPressed())
-            {
-                Zoom();
-            }
+        // Handle zoom with Alt + Left or Right Mouse Button
+        if ((Input.GetMouseButton(0) || Input.GetMouseButton(1)) && IsAltPressed())
+        {
+            Zoom();
+        }
 
-            // Only reset the cooldown if the button has been held long enough
-            if (isMouseButtonHeld)
-            {
-                mouseButtonHoldTime += Time.deltaTime;
-                rotationCooldown = 0f; // Don't apply the cooldown until the button is released.
-                currentRotationSpeed = 0f; // Reset rotation speed while the button is held
-            }
-            else if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
-            {
-                rotationCooldown = rotationCooldownDuration; // Reset the cooldown if the button is pressed again
-            }
-            else
-            {
-                // Apply gentle rotation after cooldown
-                ApplyGentleRotation();
-            }
+        //Debug.Log(mouseButtonHoldTime);
+
+        // Only reset the cooldown if the button has been held long enough
+        if (mouseButtonHoldTime < .15f)
+        {
+            Debug.Log("short click " + mouseButtonHoldTime);
+            /*mouseButtonHoldTime += Time.deltaTime;
+            rotationCooldown = 0f; // Don't apply the cooldown until the button is released.
+            currentRotationSpeed = 0f; // Reset rotation speed while the button is held*/
+        }
+        if(mouseButtonHoldTime > .2f)
+        {
+            Debug.Log("long click " + mouseButtonHoldTime);
+        }
+        else if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
+        {
+            rotationCooldown = rotationCooldownDuration; // Reset the cooldown if the button is pressed again
         }
     }
 
@@ -203,6 +202,7 @@ public class CameraControl : MonoBehaviour
     private void TurnAutoRotationOff()
     {
         isAutoRotationActive = false;
+        currentRotationSpeed = 0f; // Immediately stop any ongoing gentle rotation
         UpdateButtonStates();
     }
 
