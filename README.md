@@ -1,8 +1,8 @@
 **Unity Project for JHU AAM**
 2024
 
-See on (website)[https://dannhardt.com/project/250363/]
-Interact on (itch.io)[https://hacceuee.itch.io/interactive-lung-development] 
+See on [website](https://dannhardt.com/project/250363/)
+Interact on [itch.io](https://hacceuee.itch.io/interactive-lung-development)
 
 Best viewed on Firefox. 
 
